@@ -3,7 +3,7 @@ import { detectRuntime, RuntimeType } from "./runtimes";
 import { getBin } from "./utils";
 
 const httpServerBin = getBin("http-server");
-export const createRuntimeHost = ({ appPort, proxyHost, proxyPort, appLocation, appArtifactLocation }: RuntimeHostConfig) => {
+export const createRuntimeHost = ({ appPort, proxyHost, appLocation, appArtifactLocation }: RuntimeHostConfig) => {
   const runtimeType = detectRuntime(appLocation);
 
   console.log(">> detected runtime:", runtimeType);
@@ -24,9 +24,7 @@ export const createRuntimeHost = ({ appPort, proxyHost, proxyPort, appLocation, 
       appArtifactLocation = appArtifactLocation || DEFAULT_CONFIG.appArtifactLocation;
       // See available options for http-server: https://github.com/http-party/http-server#available-options
       // Note: --proxy allows us to add fallback routes for SPA (https://github.com/http-party/http-server#catch-all-redirect)
-      const args = `${appArtifactLocation} -d false --host ${proxyHost} --port ${appPort} --cache -1 --proxy http://${proxyHost}:${proxyPort}/?`.split(
-        " "
-      );
+      const args = `${appArtifactLocation} -d false --host ${proxyHost} --port ${appPort} --cache -1`.split(" ");
 
       return {
         command,
