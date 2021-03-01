@@ -1,8 +1,12 @@
 import mockFs from "mock-fs";
 import path from "path";
-import { argv, findSWAConfigFile, readConfigFile, response, traverseFolder, validateCookie } from "./utils";
+import { argv, findSWAConfigFile, readConfigFile, response, traverseFolder, validateCookie, parsePort } from "./utils";
 
 describe("Utils", () => {
+  const mockExit = jest.spyOn(process, "exit").mockImplementation(() => {
+    return undefined as never;
+  });
+
   beforeEach(() => {
     process.env.DEBUG = "";
     process.argv = [];
@@ -834,6 +838,24 @@ jobs:
       expect(file).toContain("staticwebapp.config.json");
 
       mockFs.restore();
+    });
+  });
+  describe("parsePort()", () => {
+    it("Ports below 1024 should be invalid", () => {
+      parsePort("0");
+      expect(mockExit).toBeCalledWith(-1);
+    });
+    it("Ports above 49151 should be invalid", () => {
+      parsePort("98765");
+      expect(mockExit).toBeCalledWith(-1);
+    });
+    it("Non-number ports should be invalid", () => {
+      parsePort("not a number");
+      expect(mockExit).toBeCalledWith(-1);
+    });
+    it("Ports between 1024 - 49151 should be valid", () => {
+      const port = parsePort("1984");
+      expect(port).toBe(1984);
     });
   });
 });

@@ -11,11 +11,12 @@
     "prebuild": "rm -fr dist",
     "postbuild": "npm run copy-assets",
     "watch": "tsc --watch",
-    "copy-assets": "node ./scripts/copy-assets.js"
+    "copy-assets": "node ./scripts/copy-assets.js",
+    "prepare": "npm run build"
   },
   "bin": {
-    "swa": "./dist/cli/index.js",
-    "swa-emu": "./dist/cli/index.js"
+    "swa": "dist/cli/index.js",
+    "swa-emu": "dist/cli/index.js"
   },
   "author": "Microsoft Corporation",
   "dependencies": {
@@ -36,6 +37,7 @@
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-angular": "^11.0.0",
     "@types/blessed": "^0.1.17",
+    "@types/concurrently": "^5.2.1",
     "@types/cookie": "^0.4.0",
     "@types/http-proxy": "^1.17.4",
     "@types/jest": "^26.0.16",
