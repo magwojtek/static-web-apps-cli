@@ -1,6 +1,6 @@
 import mockFs from "mock-fs";
 import path from "path";
-import { argv, findSWAConfigFile, readConfigFile, response, traverseFolder, validateCookie, parsePort } from "./utils";
+import { argv, findSWAConfigFile, readConfigFile, response, traverseFolder, validateCookie, parsePort, address } from "./utils";
 
 describe("Utils", () => {
   const mockExit = jest.spyOn(process, "exit").mockImplementation(() => {
@@ -856,6 +856,27 @@ jobs:
     it("Ports between 1024 - 49151 should be valid", () => {
       const port = parsePort("1984");
       expect(port).toBe(1984);
+    });
+  });
+
+  describe("address()", () => {
+    it("should throw for malformed URI", () => {
+      expect(() => address("", undefined)).toThrowError(/is not set/);
+      expect(() => address("", 80)).toThrowError(/is not set/);
+      expect(() => address("¬˚˜∆˙¨√√†®ç†®∂œƒçƒ∂ß®´ß`®´£¢´®¨¥†øˆ¨ø(*&*ˆ%&ˆ%$#%@!", 80)).toThrowError(/malformed/);
+      expect(() => address("123.45.43.56234", undefined)).toThrowError(/malformed/);
+    });
+
+    it("should handle valid URIs", () => {
+      expect(address("foo", undefined)).toBe("http://foo");
+      expect(address("foo.com", undefined)).toBe("http://foo.com");
+      expect(address("foo.com", 80)).toBe("http://foo.com:80");
+      expect(address("foo.bar.com", 80)).toBe("http://foo.bar.com:80");
+      expect(address("foo.com", "4200")).toBe("http://foo.com:4200");
+      expect(address("127.0.0.1", "4200")).toBe("http://127.0.0.1:4200");
+      expect(address("127.0.0.1", "4200")).toBe("http://127.0.0.1:4200");
+      expect(address("[::1]", "4200")).toBe("http://[::1]:4200");
+      expect(address("[2001:4860:4860::8888]", "4200")).toBe("http://[2001:4860:4860::8888]:4200");
     });
   });
 });
